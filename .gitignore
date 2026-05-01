@@ -1,0 +1,32 @@
+# Compiled binary (module name = acode)
+/acode
+/acode.exe
+
+# Test binaries and coverage artifacts
+*.test
+*.out
+coverage.txt
+coverage.html
+
+# Go workspace files (developer-local; do not commit)
+go.work
+go.work.sum
+
+# Vendored deps (using modules; opt in by removing this line)
+/vendor/
+
+# Build/release output
+/dist/
+/build/
+
+# Editors / IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
