@@ -150,6 +150,18 @@ JSON schema is committed to be **additive across versions** (see
 [docs/json-schema.md](docs/json-schema.md) for the stability promise);
 everything else may shift before v1.
 
+## 🌟 Star History
+
+<div align="center">
+
+[![Star History Chart](https://api.star-history.com/svg?repos=kypkk/acode&type=Date)](https://star-history.com/#Calcium-Ion/new-api&Date)
+
+</div>
+
+---
+
+<div align="center">
+
 ## License
 
 [MIT](LICENSE).
