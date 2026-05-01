@@ -151,10 +151,5 @@ JSON schema is committed to be **additive across versions** (see
 everything else may shift before v1.
 
 ## 🌟 Star History
-
-<div align="center">
-
-[![Star History Chart](https://api.star-history.com/svg?repos=kypkk/acode&type=Date)](https://star-history.com/#Calcium-Ion/new-api&Date)
-
-</div>
+[![Star History Chart](https://api.star-history.com/chart?repos=kypkk/acode&type=date&legend=bottom-right)](https://www.star-history.com/?repos=kypkk/acode&type=date&legend=bottom-right)
 
