@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"strings"
@@ -121,6 +122,62 @@ type User struct {
 	}
 }
 
+func TestRunSignatures_JSONFormat(t *testing.T) {
+	path := writeFixture(t, `package mypkg
+
+// Hello greets you.
+func Hello() error { return nil }
+
+type User struct {
+	Name string
+}
+`)
+	var buf bytes.Buffer
+	if err := runSignatures(path, "json", false, &buf); err != nil {
+		t.Fatalf("runSignatures: %v", err)
+	}
+	out := buf.String()
+	// Valid JSON
+	var parsed struct {
+		File      string `json:"file"`
+		Package   string `json:"package"`
+		Functions []struct {
+			Name     string `json:"name"`
+			Doc      string `json:"doc"`
+			Exported bool   `json:"exported"`
+		} `json:"functions"`
+		Types []struct {
+			Name   string `json:"name"`
+			Kind   string `json:"kind"`
+			Fields []struct {
+				Name string `json:"name"`
+				Type string `json:"type"`
+			} `json:"fields"`
+		} `json:"types"`
+	}
+	if err := json.Unmarshal([]byte(out), &parsed); err != nil {
+		t.Fatalf("output is not valid JSON: %v\n%s", err, out)
+	}
+	if parsed.Package != "mypkg" {
+		t.Errorf("package = %q, want mypkg", parsed.Package)
+	}
+	if !strings.HasSuffix(parsed.File, "input.go") {
+		t.Errorf("file = %q, want suffix input.go", parsed.File)
+	}
+	if len(parsed.Functions) != 1 || parsed.Functions[0].Name != "Hello" {
+		t.Errorf("functions: %+v", parsed.Functions)
+	}
+	if parsed.Functions[0].Doc != "Hello greets you." {
+		t.Errorf("doc = %q", parsed.Functions[0].Doc)
+	}
+	if len(parsed.Types) != 1 || parsed.Types[0].Kind != "struct" {
+		t.Errorf("types: %+v", parsed.Types)
+	}
+	if len(parsed.Types[0].Fields) != 1 || parsed.Types[0].Fields[0].Name != "Name" {
+		t.Errorf("fields: %+v", parsed.Types[0].Fields)
+	}
+}
+
 func TestRunSignatures_FileNotFoundReturnsError(t *testing.T) {
 	var buf bytes.Buffer
 	err := runSignatures("/nonexistent/path/to/file.go", "agent", false, &buf)
@@ -132,7 +189,7 @@ func TestRunSignatures_FileNotFoundReturnsError(t *testing.T) {
 func TestRunSignatures_UnknownFormatReturnsError(t *testing.T) {
 	path := writeFixture(t, "package x\n")
 	var buf bytes.Buffer
-	err := runSignatures(path, "json", false, &buf)
+	err := runSignatures(path, "yaml", false, &buf)
 	if err == nil {
 		t.Fatal("expected error for unknown format")
 	}

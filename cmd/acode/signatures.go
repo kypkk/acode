@@ -30,10 +30,13 @@ By default only exported (capital-prefixed) names are shown. Pass --all
 to include unexported symbols. The members of an included type — struct
 fields and interface methods — are always shown in full.
 
-Two output formats are supported:
+Three output formats are supported:
   human (default)  Indented, optionally coloured for terminal viewing.
   agent            Dense, deterministic, one entity per line — suitable
-                   for piping into other tools or another agent.`,
+                   for piping into other tools or another agent.
+  json             Structured JSON document for programmatic consumers
+                   (MCP servers, future skills). Schema is committed to
+                   be additive across versions.`,
 	Args: cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		return runSignatures(args[0], sigFormat, sigAll, cmd.OutOrStdout())
@@ -41,7 +44,7 @@ Two output formats are supported:
 }
 
 func init() {
-	signaturesCmd.Flags().StringVar(&sigFormat, "format", "human", "Output format: human or agent")
+	signaturesCmd.Flags().StringVar(&sigFormat, "format", "human", "Output format: human, agent, or json")
 	signaturesCmd.Flags().BoolVar(&sigAll, "all", false, "Include unexported (lowercase-prefix) symbols")
 	rootCmd.AddCommand(signaturesCmd)
 }
@@ -72,8 +75,10 @@ func runSignatures(path, formatName string, all bool, out io.Writer) error {
 		rendered = format.Human(sigs, types, format.HumanOptions{Color: writerIsTTY(out)})
 	case "agent":
 		rendered = format.Agent(sigs, types)
+	case "json":
+		rendered = format.JSON(path, analyzer.PackageName(tree, src), sigs, types)
 	default:
-		return fmt.Errorf("unknown --format %q (want human or agent)", formatName)
+		return fmt.Errorf("unknown --format %q (want human, agent, or json)", formatName)
 	}
 
 	if _, err := io.WriteString(out, rendered); err != nil {
