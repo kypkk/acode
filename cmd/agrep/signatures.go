@@ -100,11 +100,11 @@ func runSignatures(path, formatName string, all bool, stdout, stderr io.Writer) 
 	}
 
 	// Hint: silent failure is bad UX. If the filter swallowed every entry,
-	// tell the user on stderr so they don't think acode is broken. Common
+	// tell the user on stderr so they don't think agrep is broken. Common
 	// trigger: package main with only lowercase decls (`func main`, helpers).
 	if !all && totalAfter == 0 && totalBefore > 0 {
 		fmt.Fprintf(stderr,
-			"acode: no exported declarations in this file (%d unexported skipped). Re-run with --all to include them.\n",
+			"agrep: no exported declarations in this file (%d unexported skipped). Re-run with --all to include them.\n",
 			totalBefore)
 	}
 	return nil

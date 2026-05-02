@@ -7,9 +7,9 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "acode",
+	Use:   "agrep",
 	Short: "Code structure recon for AI agents",
-	Long: `acode extracts function signatures, type declarations, and doc comments
+	Long: `agrep extracts function signatures, type declarations, and doc comments
 from source files so AI agents can understand a codebase's shape without
 reading every line.
 

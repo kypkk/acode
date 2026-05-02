@@ -1,4 +1,4 @@
-# acode
+# agrep
 
 [![CI](https://github.com/kypkk/acode/actions/workflows/ci.yml/badge.svg)](https://github.com/kypkk/acode/actions/workflows/ci.yml)
 [![Go Reference](https://pkg.go.dev/badge/github.com/kypkk/acode.svg)](https://pkg.go.dev/github.com/kypkk/acode)
@@ -7,7 +7,7 @@
 
 > Token-efficient code recon for AI agents. A scout you run before `read`.
 
-`acode` is a CLI that extracts function signatures, type declarations, and
+`agrep` is a CLI that extracts function signatures, type declarations, and
 doc comments from source files, so an AI agent can understand what a file
 exposes without reading every byte of it.
 
@@ -22,28 +22,28 @@ and stacks up fast across a survey.
 But the agent rarely needs the bodies. It needs the surface: what does
 this file export? What are the signatures? Are there doc comments?
 
-acode renders that surface in roughly **10% of the source size**:
+agrep renders that surface in roughly **10% of the source size**:
 
 | File | Source | Agent format | Reduction |
 |---|---:|---:|---:|
 | `internal/analyzer/types.go` | 4,763 B | 575 B | **8.3×** |
 
-Run acode first to scope what's interesting. Run `read` only on the file
+Run agrep first to scope what's interesting. Run `read` only on the file
 that actually matters.
 
 ## Install
 
 ```bash
-go install github.com/kypkk/acode/cmd/acode@latest
+go install github.com/kypkk/acode/cmd/agrep@latest
 ```
 
-> acode uses a tree-sitter binding that requires cgo, so a working C
+> agrep uses a tree-sitter binding that requires cgo, so a working C
 > compiler must be available at install time (Apple clang, gcc, or MSVC).
 
 ## Usage
 
 ```
-acode signatures <file> [--format=human|agent|json] [--all]
+agrep signatures <file> [--format=human|agent|json] [--all]
 ```
 
 | Flag | Default | Effect |
@@ -51,12 +51,12 @@ acode signatures <file> [--format=human|agent|json] [--all]
 | `--format` | `human` | Output format. `human` is for terminals, `agent` is for piping into another agent or tool, `json` is for programmatic consumers. |
 | `--all` | `false` | Include unexported (lowercase-prefix) symbols. By default only exported names appear. Members of an *included* type (struct fields, interface methods) are always shown. |
 
-Run `acode --help` or `acode signatures --help` for the full reference.
+Run `agrep --help` or `agrep signatures --help` for the full reference.
 
 ### Human format
 
 ```
-$ acode signatures internal/analyzer/types.go --all
+$ agrep signatures internal/analyzer/types.go --all
 struct TypeDecl  # line 14
   Name       string
   Kind       string
@@ -80,7 +80,7 @@ Auto-coloured when stdout is a TTY, plain when piped.
 ### Agent format
 
 ```
-$ acode signatures internal/analyzer/types.go --format=agent --all
+$ agrep signatures internal/analyzer/types.go --format=agent --all
 struct 14 TypeDecl {Name string; Kind string; Line int; Fields []Field; Methods []Method; Underlying string}
 struct 26 Field {Name string; Type string}
 struct 33 Method {Name string; Parameters []string; ReturnTypes []string}
@@ -93,7 +93,7 @@ the same input always produces byte-identical output. No ANSI codes.
 ### JSON format
 
 ```
-$ acode signatures internal/format/json.go --format=json | jq '.functions[].name'
+$ agrep signatures internal/format/json.go --format=json | jq '.functions[].name'
 "JSON"
 ```
 
@@ -103,7 +103,7 @@ agent skills, and downstream tooling.
 
 ## What's supported
 
-acode v0 is **Go-only**. The codebase is structured behind a
+agrep v0 is **Go-only**. The codebase is structured behind a
 language-agnostic `parser.Parser` interface so additional languages plug
 in without touching the analyzer or formatters — but no other languages
 ship today.
@@ -125,7 +125,7 @@ Not yet captured (planned, additive when added):
 
 ## How it works
 
-acode parses source with [tree-sitter](https://tree-sitter.github.io/)
+agrep parses source with [tree-sitter](https://tree-sitter.github.io/)
 and walks the AST. Tree-sitter is fast, error-recovering, and
 language-agnostic — the same engine handles dozens of languages with
 small per-language grammar packages.
